@@ -43,10 +43,10 @@ int main(int argc, char* argv[]) {
 
     int strIdx = 0;
 
-    // for (Token t: tokens) {
-    //     cout << t.tType << ' ' << t.tVal << ' ';
-    // }
-    // cout << endl;
+    for (Token t: tokens) {
+        cout << t.tType << ' ' << t.tVal << ' ';
+    }
+    cout << endl << "Output:" << endl << endl;
 
     for (int i = 0; i < tokens.size(); i++) {
         if (tokens[i].tType == "func") {
@@ -58,6 +58,80 @@ int main(int argc, char* argv[]) {
                         data += "jklZmmVariableIndex" + to_string(strIdx) + " db '" + tokens[i].tVal + "', 0xa\nlen" + to_string(strIdx) + " equ $ - jklZmmVariableIndex" + to_string(strIdx) + "\n";
                         strIdx++;
                         continue;
+                    } else if (tokens[i].tType == "int") {
+                        double sum = stoi(tokens[i].tVal);
+                        while (true) {
+                            if (canAdv(i, tokens.size())) {
+                                i++;
+                                if (tokens[i].tType == "math") {
+                                    if (tokens[i].tVal == "plus") {
+                                        if (canAdv(i, tokens.size())) {
+                                            i++;
+                                            if (tokens[i].tType == "int") {
+                                                sum += stoi(tokens[i].tVal);
+                                            } else {
+                                                cout << "holup [4] - error while compiling: erm wtf cant put those two together..." << endl;
+                                                exit(4);
+                                            }
+                                        } else {
+                                            cout << "holup [3] - error while compiling: bro tried to yap math" << endl;
+                                            exit(3);
+                                        }
+                                    } else if (tokens[i].tVal == "minus") {
+                                        if (canAdv(i, tokens.size())) {
+                                            i++;
+                                            if (tokens[i].tType == "int") {
+                                                sum -= stoi(tokens[i].tVal);
+                                            } else {
+                                                cout << "holup [4] - error while compiling: erm wtf cant put those two together..." << endl;
+                                                exit(4);
+                                            }
+                                        } else {
+                                            cout << "holup [3] - error while compiling: bro tried to yap math" << endl;
+                                            exit(3);
+                                        }
+                                    } else if (tokens[i].tVal == "multi") {
+                                        if (canAdv(i, tokens.size())) {
+                                            i++;
+                                            if (tokens[i].tType == "int") {
+                                                sum *= stoi(tokens[i].tVal);
+                                            } else {
+                                                cout << "holup [4] - error while compiling: erm wtf cant put those two together..." << endl;
+                                                exit(4);
+                                            }
+                                        } else {
+                                            cout << "holup [3] - error while compiling: bro tried to yap math" << endl;
+                                            exit(3);
+                                        }
+                                    } else if (tokens[i].tVal == "divi") {
+                                        if (canAdv(i, tokens.size())) {
+                                            i++;
+                                            if (tokens[i].tType == "int") {
+                                                sum = sum /  stoi(tokens[i].tVal);
+                                                cout << 4 / 8 << endl;
+                                            } else {
+                                                cout << "holup [4] - error while compiling: erm wtf cant put those two together..." << endl;
+                                                exit(4);
+                                            }
+                                        } else {
+                                            cout << "holup [3] - error while compiling: bro tried to yap math" << endl;
+                                            exit(3);
+                                        }
+                                    } else {
+                                        break;
+                                    }
+                                } else {
+                                    cout << "holup [2] - error while compiling: number and what bro?" << endl;
+                                    exit(2);
+                                }
+                            } else {
+                                break;
+                            }
+                        }
+
+                        text += "mov edx, len" + to_string(strIdx)+ "\nmov ecx, jklZmmVariableIndex" + to_string(strIdx) + "\nmov ebx, 1\nmov eax, 4\nint 0x80\n";
+                        data += "jklZmmVariableIndex" + to_string(strIdx) + " db '" + to_string(sum) + "', 0xa\nlen" + to_string(strIdx) + " equ $ - jklZmmVariableIndex" + to_string(strIdx) + "\n";
+                        strIdx++;
                     }
                 } else {
                     cout << "holup [1] - error while compiling: can't yap allat" << endl;
@@ -70,8 +144,8 @@ int main(int argc, char* argv[]) {
     ofstream zmmOut("zmmOut.asm");
     zmmOut << start + data + text + end;
     zmmOut.close();
-    system("nasm -felf32 -g -Fdwarf zmmOut.asm -o zmmOut.o");
-    system(("ld -m elf_i386 -s -o " + fileOut + " zmmOut.o").c_str());
+    system("nasm -felf64 zmmOut.asm -o zmmOut.o");
+    system(("ld zmmOut.o -o \"" + fileOut + "\"").c_str());
 
     remove("zmmOut.asm");
     remove("zmmOut.o");

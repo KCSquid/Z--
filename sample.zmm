@@ -1,3 +1,2 @@
-yap "abc"
-yap "cba"
-yap "aydo"
+yap "sample.zmm ~ this file will output the math equation below..."
+yap 2 / 9 + 2 * 3
