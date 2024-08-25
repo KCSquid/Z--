@@ -1,9 +1,5 @@
-// #ifndef zpp_header
-// #define zpp_header
 #include <vector>
 #include <string>
-
-// using namespace std;
 
 struct Token{
     std::string tType;
@@ -11,5 +7,4 @@ struct Token{
 };
 
 std::vector<Token> lex(std::string fileName);
-
-// #endif
+void compile(std::vector<Token> tokens, std::string fileOutputName);

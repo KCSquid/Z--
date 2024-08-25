@@ -77,7 +77,15 @@ vector<Token> lex(string fileName) {
             continue;
         }
 
-        if (token == "yap") {
+        if (token == "erm") {
+            Token t;
+            t.tType = "func";
+            t.tVal = "erm";
+            tokens.push_back(t);
+            token = "";
+        }
+
+        else if (token == "yap") {
             Token t;
             t.tType = "func";
             t.tVal = "yap";
